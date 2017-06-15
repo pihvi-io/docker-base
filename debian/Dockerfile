@@ -28,7 +28,7 @@ deb-src http://security.debian.org/ jessie/updates main" > /etc/apt/sources.list
     # Rebuild pam with --disable-audit flag
     # Fixes: https://github.com/docker/docker/issues/5899
     ##
-    && apt-get -y build-dep pam \
+    && apt-get -y build-dep -o APT::Get::Build-Dep-Automatic=true pam \
     && cd /tmp/ \
     && export CONFIGURE_OPTS=--disable-audit \
     && apt-get -b source pam \
@@ -36,7 +36,7 @@ deb-src http://security.debian.org/ jessie/updates main" > /etc/apt/sources.list
     && rm -rf /tmp/* \
     && unset CONFIGURE_OPTS \
 
-    # Install ca-certificates
+    # Install curl and ca-certificates
     && apt-get install -y --no-install-recommends curl ca-certificates \
 
     # This folder is in $PATH by default but isn't created by default
@@ -61,12 +61,6 @@ deb-src http://security.debian.org/ jessie/updates main" > /etc/apt/sources.list
     && validate_sha256sum /tmp/s6-overlay-amd64.tar.gz ${S6_OVERLAY_SHA256} \
     && tar -zxvf /tmp/s6-overlay-amd64.tar.gz -C / \
 
-    # Install envsubst command for replacing config files in system startup
-    # - it needs libintl package
-    # - only weights 100KB combined with it's libraries
-    && apt-get install -y gettext \
-    && mv /usr/bin/envsubst /usr/local/sbin/envsubst \
-
     ##
     # Create a few aliases
     # - I didn't figure out how to load aliases into sh shell with docker so we add scripts instead
@@ -82,8 +76,8 @@ deb-src http://security.debian.org/ jessie/updates main" > /etc/apt/sources.list
     && chmod a+x /usr/local/bin/* \
 
     # Cleanup
-    && apt-get remove --purge -y $(apt-mark showauto) \
-    && apt-get clean \
+    && apt-get -y autoremove \
+    && apt-get -y clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/log/apt/*
 
 COPY rootfs/ /
