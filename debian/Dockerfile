@@ -54,14 +54,6 @@ deb-src http://security.debian.org/ jessie/updates main" > /etc/apt/sources.list
     && chmod a+x * \
 
     ##
-    # Add S6-overlay to use S6 process manager
-    # source: https://github.com/just-containers/s6-overlay/#the-docker-way
-    ##
-    && curl -L -o /tmp/s6-overlay-amd64.tar.gz https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz \
-    && validate_sha256sum /tmp/s6-overlay-amd64.tar.gz ${S6_OVERLAY_SHA256} \
-    && tar -zxvf /tmp/s6-overlay-amd64.tar.gz -C / \
-
-    ##
     # Create a few aliases
     # - I didn't figure out how to load aliases into sh shell with docker so we add scripts instead
     ##
@@ -79,6 +71,16 @@ deb-src http://security.debian.org/ jessie/updates main" > /etc/apt/sources.list
     && apt-get -y autoremove \
     && apt-get -y clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/log/apt/*
+
+RUN \
+    ##
+    # Add S6-overlay to use S6 process manager
+    # source: https://github.com/just-containers/s6-overlay/#the-docker-way
+    ##
+    && curl -L -o /tmp/s6-overlay-amd64.tar.gz https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz \
+    && validate_sha256sum /tmp/s6-overlay-amd64.tar.gz ${S6_OVERLAY_SHA256} \
+    && tar -zxvf /tmp/s6-overlay-amd64.tar.gz -C \
+    && rm -rf /tmp/*
 
 COPY rootfs/ /
 
