@@ -10,6 +10,9 @@ ARG S6_OVERLAY_SHA256=b5d360383dd519a33bd39651c43c49b4cf0e95344a94ba65dd8628eefd
 ENV TZ="Europe/Helsinki" \
     DEBIAN_FRONTEND=noninteractive
 
+# Set debconf to run non-interactively
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+
 RUN set -x \
 
     # Add all deb-src addresses
