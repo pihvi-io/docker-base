@@ -1,14 +1,7 @@
-FROM debian:jessie
+FROM debian:stretch
 MAINTAINER Onni Hakala <onni@keksi.io>
 
-# Build arguments
-ARG S6_OVERLAY_VERSION=v1.19.1.1
-ARG S6_OVERLAY_SHA256=b5d360383dd519a33bd39651c43c49b4cf0e95344a94ba65dd8628eefd9ee5cb
-
-# Finland is quite nice place to live.
-# Instead of forking this you should move your living address here.
-ENV TZ="Europe/Helsinki" \
-    DEBIAN_FRONTEND=noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Set debconf to run non-interactively
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
@@ -16,12 +9,12 @@ RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selectio
 RUN set -x \
 
     # Add all deb-src addresses
-    && echo "deb http://deb.debian.org/debian jessie main\n\
-deb-src http://deb.debian.org/debian jessie main\n\
-deb http://deb.debian.org/debian jessie-updates main\n\
-deb-src http://deb.debian.org/debian jessie-updates main\n\
-deb http://security.debian.org jessie/updates main\n\
-deb-src http://security.debian.org/ jessie/updates main" > /etc/apt/sources.list \
+    && echo "deb http://deb.debian.org/debian stretch main\n\
+deb-src http://deb.debian.org/debian stretch main\n\
+deb http://deb.debian.org/debian stretch-updates main\n\
+deb-src http://deb.debian.org/debian stretch-updates main\n\
+deb http://security.debian.org stretch/updates main\n\
+deb-src http://security.debian.org/ stretch/updates main" > /etc/apt/sources.list \
 
     # Update sources and upgrade all packages
     && apt-get update -y \
@@ -39,8 +32,8 @@ deb-src http://security.debian.org/ jessie/updates main" > /etc/apt/sources.list
     && rm -rf /tmp/* \
     && unset CONFIGURE_OPTS \
 
-    # Install curl and ca-certificates
-    && apt-get install -y --no-install-recommends curl ca-certificates \
+    # Install wget curl and ca-certificates
+    && apt-get install -y --no-install-recommends wget curl ca-certificates \
 
     # This folder is in $PATH by default but isn't created by default
     && mkdir -p /usr/local/sbin \
@@ -74,17 +67,3 @@ deb-src http://security.debian.org/ jessie/updates main" > /etc/apt/sources.list
     && apt-get -y autoremove \
     && apt-get -y clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/log/apt/*
-
-RUN \
-    ##
-    # Add S6-overlay to use S6 process manager
-    # source: https://github.com/just-containers/s6-overlay/#the-docker-way
-    ##
-    && curl -L -o /tmp/s6-overlay-amd64.tar.gz https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz \
-    && validate_sha256sum /tmp/s6-overlay-amd64.tar.gz ${S6_OVERLAY_SHA256} \
-    && tar -zxvf /tmp/s6-overlay-amd64.tar.gz -C \
-    && rm -rf /tmp/*
-
-COPY rootfs/ /
-
-ENTRYPOINT ["/init"]

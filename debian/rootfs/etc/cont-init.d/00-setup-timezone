@@ -1,5 +1,0 @@
-#!/usr/bin/with-contenv bash
-
-# Add default timezone
-ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime
-echo "${TZ}" > /etc/timezone

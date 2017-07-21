@@ -9,8 +9,6 @@ $ docker pull pihvio/base:debian
 ```
 
 ### Features
-* [S6 overlay] for running multiple processes
-* Automatically setups the timezone from $TZ env variable
 * Doesn't send the audit signals from `su` ( Fixes: https://github.com/moby/moby/issues/5899 )
 
 ## Maintainers
