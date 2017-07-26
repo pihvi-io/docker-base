@@ -67,3 +67,15 @@ deb-src http://security.debian.org/ stretch/updates main" > /etc/apt/sources.lis
     && apt-get -y autoremove \
     && apt-get -y clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/log/apt/*
+
+##
+# Install gomplate for fast envsubst like templates but with more logic
+##
+ARG GOTEMPLATE_VERSION=v1.9.1
+ADD https://github.com/hairyhenderson/gomplate/releases/download/${GOTEMPLATE_VERSION}/gomplate_linux-amd64-slim /usr/local/bin/gomplate
+
+##
+# Install forego for running multiple processes
+##
+RUN wget https://bin.equinox.io/c/ekMN3bCZFUn/forego-stable-linux-amd64.tgz -O - | tar xz -C /usr/local/bin/ \
+    && chmod +x /usr/local/bin/*
